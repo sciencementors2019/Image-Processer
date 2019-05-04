@@ -10,4 +10,4 @@ pixelVals = list(img.getdata())
 
 #Writing new file
 out = open("out.txt",'w')
-out.write(pixelVals.__str__())
+out.write(pixelVals.__str__())#
