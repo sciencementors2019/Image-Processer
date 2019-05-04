@@ -9,5 +9,5 @@ img = Image.open('D:/Science Mentors 2019/ImageProcesser/pointillist.bmp', 'r')
 pixelVals = list(img.getdata())
 
 #Writing new file
-out = open("out.txt",'x')
-out.write(pixelVals)
+out = open("out.txt",'w')
+out.write(pixelVals.__str__())
