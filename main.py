@@ -1,18 +1,30 @@
 #Import PIL (pip install pillow) an image manipulation library
 
 from PIL import Image
+import glob
+
+#getting list of bmp images
+imgs = glob.glob("ImageProcesser\*.bmp")
+fils = []
+pixelVals = []
 
 #Opening a sample image
-img = Image.open('D:/Science Mentors 2019/ImageProcesser/pointillist.bmp', 'r')
+for img in imgs:
+    fils.append(Image.open(img, 'r'))
 
 #Getting the pixel values
-pixelVals = list(img.getdata())
+for img in fils:
+    pixelVals.append(list(img.getdata()))
 
 #Writing new file
 out = open("out.json",'w')
 out.write("{\n")
-out.write("\t\"img"+"1"+"\":")
-out.write("\"")
-out.write(pixelVals.__str__())
-out.write("\"")
+for i in range(len(pixelVals)):
+    out.write("\t\"img"+i.__str__()+"\":")
+    out.write("\"")
+    out.write(pixelVals[i].__str__())
+    if pixelVals[len(pixelVals)-1]!=pixelVals[i]:
+        out.write("\",\n")
+    else:
+        out.write("\"")
 out.write("\n}")
