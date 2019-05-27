@@ -4,18 +4,27 @@ from PIL import Image
 import glob
 
 #getting list of bmp images
-imgs = glob.glob("ImageProcesser\*.bmp")
+imgs = glob.glob("./*.bmp")
 fils = []
 pixelVals = []
 
 #Opening a sample image
 for img in imgs:
+    pixelVals.append([])
     fils.append(Image.open(img, 'r'))
 
 #Getting the pixel values
 for img in fils:
-    pixelVals.append(list(img.getdata()))
-
+    img.convert('RGB')
+    width, height = img.size
+    for i in range(0,width):
+        for j in range(0,height):
+            r = img.getpixel((i,j))
+            for i in range(len(fils)):
+                if img == fils[i]:
+                    pixelVals[i].append(r)
+            
+print(pixelVals)
 #Writing new file
 out = open("out.json",'w')
 out.write("{\n")
