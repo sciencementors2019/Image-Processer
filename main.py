@@ -8,12 +8,12 @@ imgs = glob.glob("./*.bmp")
 fils = []
 pixelVals = []
 
-#Opening a sample image
+#Opening images
 for img in imgs:
     pixelVals.append([])
     fils.append(Image.open(img, 'r'))
 
-#Getting the pixel values
+#Getting the pixel values and appending them to pixelvals list
 for img in fils:
     img.convert('RGB')
     width, height = img.size
@@ -25,15 +25,14 @@ for img in fils:
                     pixelVals[i].append(r)
             
 print(pixelVals)
-#Writing new file
+#Writing to out.json file
 out = open("out.json",'w')
 out.write("{\n")
 for i in range(len(pixelVals)):
     out.write("\t\"img"+i.__str__()+"\":")
-    out.write("\"")
     out.write(pixelVals[i].__str__())
     if pixelVals[len(pixelVals)-1]!=pixelVals[i]:
-        out.write("\",\n")
+        out.write(",\n")
     else:
-        out.write("\"")
+        out.write("")
 out.write("\n}")
