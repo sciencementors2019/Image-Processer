@@ -24,15 +24,15 @@ for img in fils:
                 if img == fils[i]:
                     pixelVals[i].append(r)
             
-print(pixelVals)
-#Writing to out.json file
+print(pixelVals) #for debugging
+#Opening out.json
 out = open("out.json",'w')
-out.write("{\n")
+out.write("{\n") #writing the first {
 for i in range(len(pixelVals)):
-    out.write("\t\"img"+i.__str__()+"\":")
+    out.write("\t\"img"+i.__str__()+"\":") #Write the image index e.g. "img0"
     out.write(pixelVals[i].__str__())
     if pixelVals[len(pixelVals)-1]!=pixelVals[i]:
-        out.write(",\n")
+        out.write(",\n") #just do a comma and then a new line
     else:
-        out.write("")
-out.write("\n}")
+        out.write("") #TODO: replace out.write("") with pass
+out.write("\n}") #writing the ending }
