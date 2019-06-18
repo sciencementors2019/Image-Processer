@@ -2,11 +2,11 @@ import os
 os.chdir('C:\\Users\\video')
 from matplotlib.pyplot import imread
 os.chdir('D:\\smc2019\\Image-Processer')
-fimg = imread("circletest.bmp")
+fimg = imread("flow.bmp")
 from skimage import color
 gimg = color.colorconv.rgb2grey(fimg)
 from skimage import measure
-contours = measure.find_contours(gimg, 0.85, fully_connected='low', positive_orientation='high')
+contours = measure.find_contours(gimg, 0.85, fully_connected='high', positive_orientation='low')
 import matplotlib.pyplot as plt
     
 for n, contour in enumerate(contours):
