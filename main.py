@@ -20,6 +20,7 @@ for img in fils:
     for i in range(0,width):
         for j in range(0,height):
             r = img.getpixel((i,j))
+            r = (r[0]+r[1]+r[2])/3
             for i in range(len(fils)):
                 if img == fils[i]:
                     pixelVals[i].append(r)
