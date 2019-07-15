@@ -15,12 +15,11 @@ with open('out.json', 'r') as f:
 Xy = jsondat(data)
 epic = randint(1,1000)
 # we create 40 separable points
-print(Xy.img0)
-X=[Xy.img0,Xy.img1]
+X=[[0],[0]]
 y = [1,0]
 print(epic)
 # fit the model, don't regularize for illustration purposes
-clf = svm.NuSVC(kernel='rbf', gamma=1)
+clf = svm.SVC(kernel='rbf', gamma=1)
 clf.fit(X, y)
 
 plt.scatter(X[:][0], y[:][1], c=y, s=30, cmap=plt.cm.Paired)
