@@ -18,6 +18,7 @@ class imageProcesser:
         self.contours,h = cv2.findContours(self.thresh,1,2)
     #warning you are now entering a bruh moment zone
     def serialize(self):
+        pickle.dump(self, open("out.p", "wb"))
         return pickle.dumps(self)
     #good you are now exiting a bruh moment zone
     def show(self):

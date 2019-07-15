@@ -5,9 +5,8 @@ image = imageProcesser('HoloSquare2.bmp')
 
 #Prints detail of the image
 image.detail()
-
 #Shows the image with cv2.imshow()
 image.show()
 
 #Returns the serialized image
-print(image.serialize())
+image.serialize()
