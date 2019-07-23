@@ -59,8 +59,8 @@ class imageProcesser:
             centre = self.getCentre(cnt)
             print("Corners: ")
             self.getCorners(approx)
-            print("Angle Of Shape: ")
-            self.getOrientation(cnt)
+            print("Angle Of Shape: "+str(self.getOrientation(cnt, self.img)))
+            
             if len(self.getEdgeLengths(approx)) < 9:
                 print("Lengths Of Edges: "+str(self.getEdgeLengths(approx)))
                 
@@ -111,25 +111,56 @@ class imageProcesser:
             AngleSet.append(Angle)
 
         return AngleSet
+
+    def drawAxis(self, img, p_, q_, colour, scale):
+        p = list(p_)
+        q = list(q_)
+        ## [visualization1]
+        angle = math.atan2(p[1] - q[1], p[0] - q[0]) # angle in radians
+        hypotenuse = math.sqrt((p[1] - q[1]) * (p[1] - q[1]) + (p[0] - q[0]) * (p[0] - q[0]))
+
+        # Here we lengthen the arrow by a factor of scale
+        q[0] = p[0] - scale * hypotenuse * math.cos(angle)
+        q[1] = p[1] - scale * hypotenuse * math.sin(angle)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), colour, 1, cv2.LINE_AA)
+
+        # create the arrow hooks
+        p[0] = q[0] + 9 * math.cos(angle + math.pi / 4)
+        p[1] = q[1] + 9 * math.sin(angle + math.pi / 4)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), colour, 1, cv2.LINE_AA)
+
+        p[0] = q[0] + 9 * math.cos(angle - math.pi / 4)
+        p[1] = q[1] + 9 * math.sin(angle - math.pi / 4)
+        cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), colour, 1, cv2.LINE_AA)
+    
     #Gets the overall rotation of the shape, spanning from -180 to 180
-    def getOrientation(self, contour):
+    def getOrientation(self, contour, img):
+        sz = len(contour)
+        data_pts = np.empty((sz, 2), dtype=np.float64)
+        for i in range(data_pts.shape[0]):
+            data_pts[i,0] = contour[i,0,0]
+            data_pts[i,1] = contour[i,0,1]
 
-        rect = cv2.minAreaRect(contour)
-        print(rect[2])
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        height_px_1 = box[0][1] - box[3][1]
-        height_px_2 = box[1][1] - box[2][1]
-        
+        # Perform PCA analysis
+        mean = np.empty((0))
+        mean, eigenvectors, eigenvalues = cv2.PCACompute2(data_pts, mean)
 
-        if height_px_1 < height_px_2:
-            close_height_px = height_px_2
-            far_height_px = height_px_1
-        else:
-            close_height_px = height_px_1
-            far_height_px = height_px_2
+        # Store the center of the object
+        cntr = (int(mean[0,0]), int(mean[0,1]))
+        ## [pca]
 
-        return rect[2]
+        ## [visualization]
+        # Draw the principal components
+        cv2.circle(img, cntr, 3, (255, 0, 255), 2)
+        p1 = (cntr[0] + 0.02 * eigenvectors[0,0] * eigenvalues[0,0], cntr[1] + 0.02 * eigenvectors[0,1] * eigenvalues[0,0])
+        p2 = (cntr[0] - 0.02 * eigenvectors[1,0] * eigenvalues[1,0], cntr[1] - 0.02 * eigenvectors[1,1] * eigenvalues[1,0])
+        self.drawAxis(img, cntr, p1, (0, 255, 0), 1)
+        self.drawAxis(img, cntr, p2, (255, 255, 0), 5)
+
+        angle = math.atan2(eigenvectors[0,1], eigenvectors[0,0])*180/math.pi # orientation in radians
+        ## [visualization]
+
+        return angle
         
     #Marks the vertices of the shape, can be used to get the number of them as well
     def getCorners(self, contours):

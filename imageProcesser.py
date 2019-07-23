@@ -4,7 +4,7 @@ from imagePInternals import *
 bundle = dataBundle()
 
 #Initializes the image processer to process 'HoloSquare2.bmp' and 
-holosquare = imageProcesser('New Bitmap Image.bmp')
+holosquare = imageProcesser('HoloSquare2.bmp')
 
 #Initializes the image processer to process 'flow.bmp' and 
 flow = imageProcesser('dfg.jpg')
