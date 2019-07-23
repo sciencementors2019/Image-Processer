@@ -10,3 +10,5 @@ image.show()
 
 #Returns the serialized image
 image.serialize()
+
+bruh = readPickle()

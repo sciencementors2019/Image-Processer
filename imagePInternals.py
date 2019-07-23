@@ -9,6 +9,9 @@ import math
 import glob
 import pickle
 
+def readPickle():
+    return pickle.load(open('out.p', 'rb'))
+
 class imageProcesser:
     def __init__(self, filename):
         self.filename=filename
@@ -20,7 +23,7 @@ class imageProcesser:
     def serialize(self):
         pickle.dump(self, open("out.p", "wb"))
         return pickle.dumps(self)
-    #good you are now exiting a bruh moment zone
+    #warning you are now exiting a bruh moment zone
     def show(self):
         cv2.imshow('img',self.img)
         cv2.waitKey(0)
