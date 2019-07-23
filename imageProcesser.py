@@ -24,3 +24,4 @@ newbundle = bundle.deserialize()
 
 #No need to deserialize imageProcesser as it is part of dataBundle object
 newbundle.getData()[1].detail()
+newbundle.getData()[1].show()

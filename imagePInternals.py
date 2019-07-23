@@ -49,21 +49,26 @@ class imageProcesser:
 
     def detail(self):
         #Prints the results to screen
+        print("Number Of Objects Detected: "+str(len(self.contours)))
         for cnt in self.contours:
             approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
             #approx is used for specific functions, cnt is used for the drawing.
             print(len(approx))
             
+            print("Corners: ")
             self.getCorners(approx)
+            print("Angle Of Shape: ")
             self.getOrientation(cnt)
             if len(self.getEdgeLengths(approx)) < 9:
-                print(self.getEdgeLengths(approx))
+                print("Lengths Of Edges: "+str(self.getEdgeLengths(approx)))
                 
             if len(self.DistanceFromCentre(approx)) < 9:
                 
-                print(self.DistanceFromCentre(approx))
+                print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
             else:
-                print(self.DistanceFromCentre(approx))
+                print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
+
+            #Draw the object on the image. show() should be called after detail()
             cv2.drawContours(self.img,[cnt],0,(1,1,1),-1)
 
     #Both Functions get the relative angle, both work to varying levels of success
@@ -138,18 +143,20 @@ class imageProcesser:
     #Gets the centre of an entire object based on contour        
     def getCentre(self, contour):
         M = cv2.moments(contour)    
-        
-        cX = int(M["m10"] / M["m00"]) #TODO: Can get a zero division error  make try and catch
-        cY = int(M["m01"] / M["m00"])
+        try:
+            cX = int(M["m10"] / M["m00"]) #TODO: Can get a zero division error  make try and catch
+            cY = int(M["m01"] / M["m00"])
+        except:
+            cX = 0
+            cY = 0
         return cX, cY
         
     #Gets the distance of each corner(I think) to the centre of the shape
     def DistanceFromCentre(self, contours):
         conRect = []
-        try:
-            centrePoint = self.getCentre(contours)
-        except:
-            centrePoint = [0,0]
+        
+        centrePoint = self.getCentre(contours)
+        
         for i in range(len(contours)):
             conBB = cv2.minAreaRect(contours[i])
             
