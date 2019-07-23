@@ -4,7 +4,7 @@ from imagePInternals import *
 bundle = dataBundle()
 
 #Initializes the image processer to process 'HoloSquare2.bmp' and 
-holosquare = imageProcesser('HoloSquare2.bmp')
+holosquare = imageProcesser('New Bitmap Image.bmp')
 
 #Initializes the image processer to process 'flow.bmp' and 
 flow = imageProcesser('dfg.jpg')
@@ -23,5 +23,6 @@ bundle.getData()
 newbundle = bundle.deserialize()
 
 #No need to deserialize imageProcesser as it is part of dataBundle object
-newbundle.getData()[1].detail()
-newbundle.getData()[1].show()
+newbundle.getData()[0].show()
+newbundle.getData()[0].detail()
+newbundle.getData()[0].show()

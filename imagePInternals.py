@@ -51,10 +51,12 @@ class imageProcesser:
         #Prints the results to screen
         print("Number Of Objects Detected: "+str(len(self.contours)))
         for cnt in self.contours:
+            #Approx is the amount of edges in the shape (circles just have a lot of faces))
             approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
             #approx is used for specific functions, cnt is used for the drawing.
+
             print(len(approx))
-            
+            centre = self.getCentre(cnt)
             print("Corners: ")
             self.getCorners(approx)
             print("Angle Of Shape: ")
@@ -70,6 +72,7 @@ class imageProcesser:
 
             #Draw the object on the image. show() should be called after detail()
             cv2.drawContours(self.img,[cnt],0,(1,1,1),-1)
+            cv2.circle(self.img, (centre[0], centre[1]), 3, (255, 0, 0), -1)
 
     #Both Functions get the relative angle, both work to varying levels of success
     def getAngleDP(self, p1, p2):
