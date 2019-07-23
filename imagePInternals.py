@@ -74,6 +74,9 @@ class imageProcesser:
             cv2.drawContours(self.img,[cnt],0,(1,1,1),-1)
             cv2.circle(self.img, (centre[0], centre[1]), 3, (255, 0, 0), -1)
 
+    def save(self, name):
+        cv2.imwrite(name, self.img)
+
     #Both Functions get the relative angle, both work to varying levels of success
     def getAngleDP(self, p1, p2):
         len1 = math.sqrt(p1[0]**2 + p1[1]**2)
