@@ -1,14 +1,26 @@
 from imagePInternals import *
 
+#Initialize the data bundle
+bundle = dataBundle()
+
 #Initializes the image processer to process 'HoloSquare2.bmp' and 
-image = imageProcesser('HoloSquare2.bmp')
+holosquare = imageProcesser('HoloSquare2.bmp')
 
-#Prints detail of the image
-image.detail()
-#Shows the image with cv2.imshow()
-image.show()
+#Initializes the image processer to process 'flow.bmp' and 
+flow = imageProcesser('dfg.jpg')
 
-#Returns the serialized image
-image.serialize()
+#Adds the processed image data to the bundle
+bundle.addImage(holosquare)
+bundle.addImage(flow)
 
-bruh = readPickle()
+#Serializes the bundle
+bundle.serialize()
+
+#Prints the unserialized data
+bundle.getData()
+
+#Gets the serialized class and deserializes it
+newbundle = bundle.deserialize()
+
+#No need to deserialize imageProcesser as it is part of dataBundle object
+newbundle.getData()[1].detail()

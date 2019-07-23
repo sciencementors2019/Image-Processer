@@ -9,8 +9,23 @@ import math
 import glob
 import pickle
 
-def readPickle():
-    return pickle.load(open('out.p', 'rb'))
+class dataBundle:
+    def __init__(self):
+        self.images = []
+    
+    def addImage(self, image):
+        self.images.append(image)
+
+    def serialize(self):
+        pickle.dump(self, open("bundle.p", "wb"))
+        return pickle.dumps(self)
+
+    def deserialize(self):
+        return pickle.load(open('bundle.p', 'rb'))
+
+    def getData(self):
+        return self.images
+
 
 class imageProcesser:
     def __init__(self, filename):
@@ -24,6 +39,9 @@ class imageProcesser:
         pickle.dump(self, open("out.p", "wb"))
         return pickle.dumps(self)
     #warning you are now exiting a bruh moment zone
+    def readPickle(self):
+        return pickle.load(open('out.p', 'rb'))
+
     def show(self):
         cv2.imshow('img',self.img)
         cv2.waitKey(0)
@@ -119,16 +137,19 @@ class imageProcesser:
         return corners
     #Gets the centre of an entire object based on contour        
     def getCentre(self, contour):
-        M = cv2.moments(contour)
-        cX = int(M["m10"] / M["m00"])
+        M = cv2.moments(contour)    
+        
+        cX = int(M["m10"] / M["m00"]) #TODO: Can get a zero division error  make try and catch
         cY = int(M["m01"] / M["m00"])
-
         return cX, cY
         
     #Gets the distance of each corner(I think) to the centre of the shape
     def DistanceFromCentre(self, contours):
         conRect = []
-        centrePoint = self.getCentre(contours)
+        try:
+            centrePoint = self.getCentre(contours)
+        except:
+            centrePoint = [0,0]
         for i in range(len(contours)):
             conBB = cv2.minAreaRect(contours[i])
             
