@@ -4,7 +4,7 @@ from imutils import contours
 import numpy as np
 import argparse
 import imutils
-import cv2
+from cv2 import cv2
 import math
 import glob
 import pickle

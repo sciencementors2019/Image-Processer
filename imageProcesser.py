@@ -6,7 +6,7 @@ bundle = dataBundle()
 #Initializes the image processer to process 'HoloSquare2.bmp' and 
 holosquare = imageProcesser('HoloSquare2.bmp')
 
-#Initializes the image processer to process 'flow.bmp' and 
+#Initializes the image processer to process 'dfg.bmp' and 
 flow = imageProcesser('dfg.jpg')
 
 #Adds the processed image data to the bundle
