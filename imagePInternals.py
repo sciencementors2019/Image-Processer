@@ -27,7 +27,7 @@ class dataBundle:
         return self.images
 
 
-class imageProcesser:
+class imageProcessor:
     def __init__(self, filename):
         self.filename=filename
         self.img=cv2.imread(self.filename)
@@ -48,32 +48,46 @@ class imageProcesser:
         cv2.destroyAllWindows()
 
     def detail(self):
+        details = []
+        
         #Prints the results to screen
-        print("Number Of Objects Detected: "+str(len(self.contours)))
+        #print("Number Of Objects Detected: "+str(len(self.contours)))
         for cnt in self.contours:
             #Approx is the amount of edges in the shape (circles just have a lot of faces))
             approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
             #approx is used for specific functions, cnt is used for the drawing.
 
-            print(len(approx))
+            #print(len(approx))
             centre = self.getCentre(cnt)
-            print("Corners: ")
-            self.getCorners(approx)
-            print("Angle Of Shape: "+str(self.getOrientation(cnt, self.img)))
+            #print("Corners: "+str(self.getCorners(approx)))
+            details.append(self.getCorners(approx))
+            #print("Angle Of Shape: "+str(self.getOrientation(cnt, self.img)))
             
             if len(self.getEdgeLengths(approx)) < 9:
-                print("Lengths Of Edges: "+str(self.getEdgeLengths(approx)))
-                
-            if len(self.DistanceFromCentre(approx)) < 9:
-                
-                print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
+                #print("Lengths Of Edges: "+str(self.getEdgeLengths(approx)))
+                details.append(self.getEdgeLengths(approx))
             else:
-                print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
+                Perimeter = 0
+                for i in self.getEdgeLengths(approx):
+                    Perimeter += i
+                #print("Lengths Of Edges: " + str(Perimeter))
+                details.append(Perimeter)
+            if len(self.getEdgeLengths(approx)) < 9:
+                #print("Sum of Angles: "+str(self.sumOfAngles(approx)))
+                details.append(self.sumOfAngles(approx))
+            if len(self.DistanceFromCentre(approx)) < 9:
+                details.append(self.DistanceFromCentre(approx))
+                #print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
+            else:
+                #print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)[0]))
+                details.append(self.DistanceFromCentre(approx))
+            
 
             #Draw the object on the image. show() should be called after detail()
-            cv2.drawContours(self.img,[cnt],0,(1,1,1),-1)
-            cv2.circle(self.img, (centre[0], centre[1]), 3, (255, 0, 0), -1)
-
+            cv2.drawContours(self.img,[cnt],0,-1)
+            #cv2.circle(self.img, (centre[0], centre[1]), 3, (255, 0, 0), -1)
+            details = np.array(details, dtype = object)
+            return details
     def save(self, name):
         cv2.imwrite(name, self.img)
 
@@ -86,7 +100,7 @@ class imageProcesser:
 
         angle = dot / (len1 * len2)
 
-        return math.acos(angle) * 180 / math.pi
+        return math.atan(angle) * 180 / math.pi
 
     def getAngleAtan(self, p1, p2):
         #atan2 gets the angle of the contour, but is extremely relative to the orientation of the object
@@ -101,17 +115,25 @@ class imageProcesser:
             conBB = cv2.minAreaRect(contours[i])
             
             conRect.append(conBB[0])
-        AngleSet = []
+        AngleSet = 0
         for i in range(len(conRect)):
-            if i+1 >= len(conRect):
-                Length1 = conRect[i-len(conRect)]
-                Length2 = conRect[i]
-            else:
-                Length1 = conRect[i-1]
-                Length2 = conRect[i+1]
+            
+            Length1 = conRect[i-1]
+            Length2 = conRect[i]
 
-            Angle = self.getAngleDP(Length1, Length2)
-            AngleSet.append(Angle)
+           # else:
+                #Length1 = conRect[i-1]
+               # Length2 = conRect[i+1]
+
+            Angle = self.drawAxis(self.img, Length1, Length2, (0, 255, 0), 1)
+            if Angle < 1:
+                Angle *= -1
+            AngleSet +=(Angle * 180 / math.pi)
+
+        if AngleSet > 100 and AngleSet < 250:
+            AngleSet = 180
+        if AngleSet > 300 and AngleSet < 400:
+            AngleSet = 360
 
         return AngleSet
 
@@ -120,6 +142,7 @@ class imageProcesser:
         q = list(q_)
         ## [visualization1]
         angle = math.atan2(p[1] - q[1], p[0] - q[0]) # angle in radians
+        #angle = self.getAngleDP(p,q)
         hypotenuse = math.sqrt((p[1] - q[1]) * (p[1] - q[1]) + (p[0] - q[0]) * (p[0] - q[0]))
 
         # Here we lengthen the arrow by a factor of scale
@@ -135,6 +158,8 @@ class imageProcesser:
         p[0] = q[0] + 9 * math.cos(angle - math.pi / 4)
         p[1] = q[1] + 9 * math.sin(angle - math.pi / 4)
         cv2.line(img, (int(p[0]), int(p[1])), (int(q[0]), int(q[1])), colour, 1, cv2.LINE_AA)
+
+        return angle
     
     #Gets the overall rotation of the shape, spanning from -180 to 180
     def getOrientation(self, contour, img):
@@ -160,7 +185,7 @@ class imageProcesser:
         self.drawAxis(img, cntr, p1, (0, 255, 0), 1)
         self.drawAxis(img, cntr, p2, (255, 255, 0), 5)
 
-        angle = math.atan2(eigenvectors[0,1], eigenvectors[0,0])*180/math.pi # orientation in radians
+        angle = math.atan2(eigenvectors[0,1], eigenvectors[0,0])*180/math.pi # orientation in degrees
         ## [visualization]
 
         return angle
@@ -243,3 +268,5 @@ class imageProcesser:
                 return "IsoscelesTriangle"
             if len(np.unique(Edges)) == 3:
                 return "Triangle"
+
+
