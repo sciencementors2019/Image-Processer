@@ -48,45 +48,50 @@ class imageProcessor:
         cv2.destroyAllWindows()
 
     def detail(self):
-        details = []
+        details = {
+            "Vertices" : 0,
+            "Perimeter" : 0,
+            "SumOfAngles" : 0,
+            "DistFromCentre" : 0
+            }
         
         #Prints the results to screen
         #print("Number Of Objects Detected: "+str(len(self.contours)))
         for cnt in self.contours:
             #Approx is the amount of edges in the shape (circles just have a lot of faces))
-            approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
+            approx = cv2.approxPolyDP(cnt,0.015*cv2.arcLength(cnt,True),True)
             #approx is used for specific functions, cnt is used for the drawing.
 
             #print(len(approx))
             centre = self.getCentre(cnt)
             #print("Corners: "+str(self.getCorners(approx)))
-            details.append(self.getCorners(approx))
+            details["Vertices"] = (self.getCorners(approx))
             #print("Angle Of Shape: "+str(self.getOrientation(cnt, self.img)))
             
             if len(self.getEdgeLengths(approx)) < 9:
                 #print("Lengths Of Edges: "+str(self.getEdgeLengths(approx)))
-                details.append(self.getEdgeLengths(approx))
+                details["Perimeter"] = (self.getEdgeLengths(approx))
             else:
                 Perimeter = 0
                 for i in self.getEdgeLengths(approx):
                     Perimeter += i
                 #print("Lengths Of Edges: " + str(Perimeter))
-                details.append(Perimeter)
-            if len(self.getEdgeLengths(approx)) < 9:
+                details["Perimeter"] = (Perimeter)
+            if len(self.getEdgeLengths(approx)) < 42:
                 #print("Sum of Angles: "+str(self.sumOfAngles(approx)))
-                details.append(self.sumOfAngles(approx))
-            if len(self.DistanceFromCentre(approx)) < 9:
-                details.append(self.DistanceFromCentre(approx))
+                details["SumOfAngles"] = (self.sumOfAngles(approx))
+            if len(self.DistanceFromCentre(approx)) < 42:
+                details["DistFromCentre"] = (self.DistanceFromCentre(approx))
                 #print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)))
             else:
                 #print("Distance From Center Of Object: "+str(self.DistanceFromCentre(approx)[0]))
-                details.append(self.DistanceFromCentre(approx))
+                details["DistFromCentre"] = (self.DistanceFromCentre(approx))
             
 
             #Draw the object on the image. show() should be called after detail()
             cv2.drawContours(self.img,[cnt],0,-1)
             #cv2.circle(self.img, (centre[0], centre[1]), 3, (255, 0, 0), -1)
-            details = np.array(details, dtype = object)
+        
             return details
     def save(self, name):
         cv2.imwrite(name, self.img)
@@ -125,7 +130,7 @@ class imageProcessor:
                 #Length1 = conRect[i-1]
                # Length2 = conRect[i+1]
 
-            Angle = self.drawAxis(self.img, Length1, Length2, (0, 255, 0), 1)
+            Angle = int(self.drawAxis(self.img, Length1, Length2, (0, 255, 0), 1))
             if Angle < 1:
                 Angle *= -1
             AngleSet +=(Angle * 180 / math.pi)
@@ -228,7 +233,7 @@ class imageProcessor:
             Corner = conRect[i-1]
 
             Hypot = np.sqrt((Corner[0] - centrePoint[0])**2 + (Corner[1] - centrePoint[1])**2)
-            disFromCentre.append(Hypot)
+            disFromCentre.append(int(Hypot))
             
         return disFromCentre
     #Gets the length of each edge and compiles them into a list
@@ -245,7 +250,7 @@ class imageProcessor:
 
 
             Hypot = np.sqrt((Length1[0] - Length2[0])**2 + (Length1[1] - Length2[1])**2)
-            conLength.append(Hypot)
+            conLength.append(int(Hypot))
             
         return conLength
     #Checks if Edge lengths are equal, doesn't work well with circles
@@ -270,3 +275,6 @@ class imageProcessor:
                 return "Triangle"
 
 
+#test = imageProcessor("C:/Users/hamis/Dropbox/Coding/Hamish/Vectorizer Python/shapes/triangle/52.png")
+#print(test.detail())
+#test.show()
